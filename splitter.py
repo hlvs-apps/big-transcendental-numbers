@@ -37,8 +37,9 @@ def split(src,out_dir,bytes_per_file,format,chars_per_step):
     diggits=math.ceil(len(str(aprox_files)))
     printverbose('That means we need '+str(diggits)+' Diggits.')
     file = open(src, 'r')
+    progressBar(0, prefix = 'Progress:', suffix = 'Complete', length = 50,total=aprox_files)
     try:
-        while 1: 
+        while 1:
             ch = file.read(chars_per_step)           
             if not ch:  
                 break
@@ -51,6 +52,7 @@ def split(src,out_dir,bytes_per_file,format,chars_per_step):
                     output.write(string_for_out)
                 string_for_out=''
                 file_number_now+=1
+                progressBar(file_number_now, prefix = 'Progress:', suffix = 'Complete', length = 50,total=aprox_files)
                 n_now=0
         if n_now!=0:
             out_name=os.path.join(out_dir, str(file_number_now).zfill(diggits) + '.' + format)
@@ -62,7 +64,14 @@ def split(src,out_dir,bytes_per_file,format,chars_per_step):
 def printverbose(text):
     if(verbose==True):
         print(text)
-
+def progressBar(state, total=10, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    # Progress Bar Printing Function
+    def printProgressBar (iteration):
+        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+        filledLength = int(length * iteration // total)
+        bar = fill * filledLength + '-' * (length - filledLength)
+        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
+    printProgressBar(state)
 def join_files_to_big_file(src_dir,out_file,format,max_size):
     printverbose("Start Joining")
     if(os.path.isdir(src_dir)):
@@ -70,8 +79,12 @@ def join_files_to_big_file(src_dir,out_file,format,max_size):
     else:
         print(src_dir+' is not a Directory. Aborting.')
         return
+    progressBar(file_number_now, prefix = 'Progress:', suffix = 'Complete', length = 50,total=aprox_files)
     with open(out_file,'w') as f:
-        for filename in glob.glob(os.path.join(src_dir, '*.' + format)):
+        list= glob.glob(os.path.join(src_dir, '*.' + format))
+        lenall=len(list)
+        i=1
+        for filename in list:
             current_size = f.tell()
             if (max_size!=-1):
                 if(current_size>=max_size):
@@ -79,7 +92,9 @@ def join_files_to_big_file(src_dir,out_file,format,max_size):
                     break
             with open(filename,'r') as actual_apend:
                 printverbose("Add "+str(filename))
+                progressBar(i, prefix = 'Progress:', suffix = 'Complete', length = 50,total=lenall)
                 f.write(actual_apend.read())
+            i+=1
 
 def main(src,out,join,format,size,max_size):
     if(join==True):
