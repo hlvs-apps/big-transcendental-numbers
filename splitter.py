@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 verbose=False
-overide=False
+overwrite=False
 aborted=False
 def query_yes_no(question):
     valid = {"yes": True, "y": True, "ye": True,
@@ -60,10 +60,10 @@ def split(src,out_dir,bytes_per_file,format,chars_per_step):
         printverbose("Checking: "+str(os.path.join(out_dir, str(i).zfill(diggits)+ '.' + format)))
         if Path(os.path.join(out_dir, str(i).zfill(diggits)+ '.' + format)).is_file():
             printverbose("Exists")
-            if(overide==True):
+            if(overwrite==True):
                 os.remove((str(os.path.join(out_dir, str(i).zfill(diggits)+ '.' + format))))
             else:
-                if(query_yes_no("File {} does exist. Do you want to overide it?".format(str(os.path.join(out_dir, str(i).zfill(diggits)))))):
+                if(query_yes_no("File {} does exist. Do you want to overwrite it?".format(str(os.path.join(out_dir, str(i).zfill(diggits)))))):
                     os.remove((str(os.path.join(out_dir, str(i).zfill(diggits)+ '.' + format))))
                     question_is_trogerd=True
                 else:
@@ -113,10 +113,10 @@ def join_files_to_big_file(src_dir,out_file,format,max_size):
     global aborted
     if Path(out_file).is_file():
             printverbose("Exists")
-            if(overide==True):
+            if(overwrite==True):
                 os.remove(out_file)
             else:
-                if(query_yes_no("File {} does exist. Do you want to overide it?".format(out_file))):
+                if(query_yes_no("File {} does exist. Do you want to overwrite it?".format(out_file))):
                     os.remove(out_file)
                     print("Note: you can also run {} -o to skip this questions.".format(os.path.basename(__file__)))
                 else:
@@ -175,11 +175,11 @@ WARNING: This Code only works with Files with one Character per Byte.
     parser.add_argument('-f','--format', dest='format', help='File Format for In and Output files. Example Usage: "-f txt" for .txt files. txt is default format',default='txt', type=str)
     parser.add_argument('--max-size', dest='maxsize', help='File Output Size for mode Join Mode in Bytes, Default is -1 (Original Size)',type=int, default=-1)
     parser.add_argument('-v','--verbose', dest='verbose', help='Show Verbose Information', action='store_true')
-    parser.add_argument('-o','--overide', dest='overide', help='Overide existing files. When set, you will not be asked if you want to overide the files', action='store_true')
+    parser.add_argument('-o','--overwrite', dest='overwrite', help='Overwrite existing files. When set, you will not be asked if you want to overwrite the files', action='store_true')
     parser.set_defaults(verbose=False)
     args = parser.parse_args()
     verbose=args.verbose
-    overide=args.overide
+    overwrite=args.overwrite
     printverbose("Verbose Information is enabled")
     printverbose("Mode: "+str(args.mode))
     printverbose("Source: "+args.src)
@@ -187,7 +187,7 @@ WARNING: This Code only works with Files with one Character per Byte.
     printverbose("Output: "+args.out)
     printverbose("Format: "+args.format)
     printverbose("Max Size: "+str(args.maxsize))
-    printverbose("Overide: "+str(args.overide))
+    printverbose("Overwrite: "+str(args.overwrite))
     if args.mode=='j':
         main(args.src,args.out,True,args.format,args.filesize,args.maxsize)
     elif args.mode=='s':
