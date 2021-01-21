@@ -39,11 +39,13 @@ def split(src,out_dir,bytes_per_file,format,chars_per_step):
         printverbose(src+' is a File')
     else:
         print(src+' is not a File. Aborting.')
+        aborted=True
         return
     if(os.path.isdir(out_dir)):
         printverbose(out_dir+' is a Directory')
     else:
         print(out_dir+' is not a Directory. Aborting.')
+        aborted=True
         return
     #Get File size of Source, to Calculate Digits
     f_size=os.path.getsize(src)
@@ -129,6 +131,7 @@ def join_files_to_big_file(src_dir,out_file,format,max_size):
         printverbose(src_dir+' is a Directory')
     else:
         print(src_dir+' is not a Directory. Aborting.')
+        aborted=True
         return
     progressBar(0, prefix = 'Progress:', suffix = 'Complete', length = 50,total=100)
     with open(out_file,'w') as f:
